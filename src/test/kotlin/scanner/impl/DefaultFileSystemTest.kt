@@ -1,11 +1,11 @@
 package scanner.impl
 
-import scanner.FileSystem
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
+import scanner.FileSystem
+import java.io.File
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import java.io.File
 
 class DefaultFileSystemTest {
     private val fileSystem: FileSystem = DefaultFileSystem()

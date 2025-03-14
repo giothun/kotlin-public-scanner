@@ -22,16 +22,30 @@ class CliParser {
 
         val parser = ArgParser("kotlin-public-scanner")
         val sourceDir by parser.argument(ArgType.String, description = "Source directory to scan")
-        val excludePattern by parser.option(ArgType.String, shortName = "e", description = "Regex pattern to exclude files")
-        val includePattern by parser.option(ArgType.String, shortName = "i", description = "Regex pattern to include files")
-        val verbose by parser.option(ArgType.Boolean, shortName = "v", description = "Enable verbose output").default(false)
-        val sequential by parser.option(ArgType.Boolean, shortName = "s", description = "Use sequential processing (slower, but lower memory usage)").default(false)
-        val concurrency by parser.option(ArgType.Int, shortName = "j", description = "Number of concurrent threads").default(Runtime.getRuntime().availableProcessors())
+        val excludePattern by parser.option(
+            ArgType.String,
+            shortName = "e",
+            description = "Regex pattern to exclude files"
+        )
+        val includePattern by parser.option(
+            ArgType.String,
+            shortName = "i",
+            description = "Regex pattern to include files"
+        )
+        val verbose by parser.option(ArgType.Boolean, shortName = "v", description = "Enable verbose output")
+            .default(false)
+        val sequential by parser.option(
+            ArgType.Boolean,
+            shortName = "s",
+            description = "Use sequential processing (slower, but lower memory usage)"
+        ).default(false)
+        val concurrency by parser.option(ArgType.Int, shortName = "j", description = "Number of concurrent threads")
+            .default(Runtime.getRuntime().availableProcessors())
 
         parser.parse(args)
-        
+
         val concurrent = !sequential
-        
+
         return CliArgs(sourceDir, excludePattern, includePattern, verbose, concurrent, concurrency)
     }
 

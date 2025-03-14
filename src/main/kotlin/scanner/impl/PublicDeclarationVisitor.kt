@@ -2,7 +2,6 @@ package scanner.impl
 
 import org.jetbrains.kotlin.lexer.KtTokens
 import org.jetbrains.kotlin.psi.*
-import org.jetbrains.kotlin.psi.KtTreeVisitorVoid
 import utils.writeln
 import java.io.Writer
 
@@ -32,7 +31,7 @@ class PublicDeclarationVisitor(
                 else -> "class"
             }
             writer.writeln("$currentIndentation $prefix $name {")
-            
+
             klass.primaryConstructor?.let { primaryConstructor ->
                 primaryConstructor.valueParameters.forEach { param ->
                     if (isPublic(param)) {
@@ -47,7 +46,7 @@ class PublicDeclarationVisitor(
                     }
                 }
             }
-            
+
             val oldIndent = currentIndentation
             currentIndentation += indentStep
             super.visitClass(klass)
@@ -74,17 +73,17 @@ class PublicDeclarationVisitor(
         if (isPublic(function)) {
             val name = function.name ?: "<anonymous>"
             val params = function.valueParameters.joinToString(", ") { it.text }
-            
+
             val receiverType = function.receiverTypeReference?.text?.let { "$it." } ?: ""
-            
+
             val typeParameters = function.typeParameters.takeIf { it.isNotEmpty() }?.let {
                 "<" + it.joinToString(", ") { it.name ?: "" } + ">"
             } ?: ""
-            
+
             val operatorKeyword = if (function.hasModifier(KtTokens.OPERATOR_KEYWORD)) "operator " else ""
-            
+
             val suspendKeyword = if (function.hasModifier(KtTokens.SUSPEND_KEYWORD)) "suspend " else ""
-            
+
             writer.writeln("$currentIndentation $operatorKeyword$suspendKeyword${function.visibility}fun $typeParameters$receiverType$name($params)")
             super.visitNamedFunction(function)
         }
@@ -94,14 +93,14 @@ class PublicDeclarationVisitor(
         if (isPublic(property)) {
             val name = property.name ?: "<anonymous>"
             val kind = if (property.isVar) "var" else "val"
-            
+
             val receiverType = property.receiverTypeReference?.text?.let { "$it." } ?: ""
-            
+
             val initializer = property.delegate?.let { " by [delegate]" } ?: ""
-            
+
             writer.writeln(
-                "$currentIndentation $kind $receiverType$name" + 
-                (property.typeReference?.let { ": ${it.text}" } ?: "") + initializer
+                "$currentIndentation $kind $receiverType$name" +
+                        (property.typeReference?.let { ": ${it.text}" } ?: "") + initializer
             )
             super.visitProperty(property)
         }
@@ -140,7 +139,7 @@ class PublicDeclarationVisitor(
             writer.writeln("$currentIndentation}")
         }
     }
-    
+
     override fun visitPropertyAccessor(accessor: KtPropertyAccessor) {
         if (isPublic(accessor)) {
             val accessorType = if (accessor.isGetter) "get()" else "set()"
@@ -155,13 +154,13 @@ class PublicDeclarationVisitor(
                         !element.hasModifier(KtTokens.PROTECTED_KEYWORD) &&
                         !element.hasModifier(KtTokens.INTERNAL_KEYWORD))
     }
-    
+
     private fun isPublic(parameter: KtParameter): Boolean {
         return !parameter.hasModifier(KtTokens.PRIVATE_KEYWORD) &&
-               !parameter.hasModifier(KtTokens.PROTECTED_KEYWORD) &&
-               !parameter.hasModifier(KtTokens.INTERNAL_KEYWORD)
+                !parameter.hasModifier(KtTokens.PROTECTED_KEYWORD) &&
+                !parameter.hasModifier(KtTokens.INTERNAL_KEYWORD)
     }
-    
+
     private val KtModifierListOwner.visibility: String
         get() = when {
             hasModifier(KtTokens.PUBLIC_KEYWORD) -> "public "

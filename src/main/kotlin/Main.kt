@@ -25,7 +25,7 @@ fun main(args: Array<String>) {
             if (cliArgs.verbose) {
                 println("Scanning with concurrent processing (${cliArgs.concurrency} threads)")
             }
-            
+
             runBlocking {
                 scanner.scanDirectoryConcurrently(
                     File(cliArgs.sourceDir),
@@ -37,7 +37,7 @@ fun main(args: Array<String>) {
             if (cliArgs.verbose) {
                 println("Scanning with sequential processing (single-threaded)")
             }
-            
+
             scanner.scanDirectory(
                 File(cliArgs.sourceDir),
                 cliArgs.excludePattern,

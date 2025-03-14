@@ -56,7 +56,11 @@ class PublicDeclarationScanner(
      * @param excludePattern Regex pattern to exclude files
      * @param includePattern Regex pattern to include files
      */
-    suspend fun scanDirectoryConcurrently(sourceDir: File, excludePattern: String? = null, includePattern: String? = null) {
+    suspend fun scanDirectoryConcurrently(
+        sourceDir: File,
+        excludePattern: String? = null,
+        includePattern: String? = null
+    ) {
         val ktFiles = fileSystem.findKotlinFiles(sourceDir, excludePattern, includePattern)
         if (ktFiles.isEmpty()) {
             writer.writeln("No Kotlin source files found in the directory")
@@ -65,11 +69,11 @@ class PublicDeclarationScanner(
         if (verbose) {
             writer.writeln("Found ${ktFiles.size} Kotlin files to process concurrently with $maxConcurrency threads")
         }
-        
+
         val disposable: Disposable = Disposer.newDisposable()
         try {
             val factory = psiFactory ?: createPsiFactory(disposable)
-            
+
             withContext(dispatcher) {
                 val processingJobs = ktFiles.map { file ->
                     async {
@@ -98,12 +102,12 @@ class PublicDeclarationScanner(
         try {
             val fileWriter = StringWriter()
             val fileVisitor = PublicDeclarationVisitor(fileWriter)
-            
+
             val content = fileSystem.readFile(file)
             val psiFile = psiFactory.createFile(content)
-            
+
             fileVisitor.processDeclarations(psiFile.declarations, "")
-            
+
             synchronized(writer) {
                 printFileHeader(file.absolutePath)
                 writer.write(fileWriter.toString())
