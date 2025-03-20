@@ -56,7 +56,7 @@ cd kotlin-public-scanner
 
 ## Performance Benchmarks
 
-We've conducted benchmark tests comparing sequential vs. concurrent processing on a large codebase ([Exposed](https://github.com/JetBrains/Exposed) Kotlin SQL library with 371 Kotlin files). Here are the results:
+I've conducted benchmark tests comparing sequential vs. concurrent processing on a large codebase ([Exposed](https://github.com/JetBrains/Exposed) Kotlin SQL library with 371 Kotlin files). Here are the results:
 
 ### Test Environment
 - 8 CPU cores
