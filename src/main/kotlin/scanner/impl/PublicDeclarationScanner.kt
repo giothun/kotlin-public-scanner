@@ -26,10 +26,8 @@ class PublicDeclarationScanner(
     private val maxConcurrency: Int = Runtime.getRuntime().availableProcessors(),
     private val dispatcher: CoroutineContext = Dispatchers.Default
 ) {
-    /**
-     * Scan a directory for Kotlin files and process them sequentially.
-     * This maintains backward compatibility with the existing implementation.
-     */
+
+     // Scan a directory for Kotlin files and process them sequentially.
     fun scanDirectory(sourceDir: File, excludePattern: String? = null, includePattern: String? = null) {
         val ktFiles = fileSystem.findKotlinFiles(sourceDir, excludePattern, includePattern)
         if (ktFiles.isEmpty()) {
@@ -50,12 +48,7 @@ class PublicDeclarationScanner(
         }
     }
 
-    /**
-     * Scan a directory for Kotlin files and process them concurrently.
-     * @param sourceDir Directory to scan
-     * @param excludePattern Regex pattern to exclude files
-     * @param includePattern Regex pattern to include files
-     */
+     // Scan a directory for Kotlin files and process them concurrently.     
     suspend fun scanDirectoryConcurrently(
         sourceDir: File,
         excludePattern: String? = null,

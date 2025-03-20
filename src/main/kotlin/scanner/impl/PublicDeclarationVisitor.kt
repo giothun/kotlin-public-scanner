@@ -27,6 +27,7 @@ class PublicDeclarationVisitor(
                 klass.isData() -> "data class"
                 klass.isSealed() -> "sealed class"
                 klass.isEnum() -> "enum class"
+                klass.isInner() -> "inner class"
                 klass.isInline() && klass.hasModifier(KtTokens.VALUE_KEYWORD) -> "value class"
                 else -> "class"
             }
