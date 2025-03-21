@@ -26,17 +26,12 @@ class PublicDeclarationScanner(
     private val maxConcurrency: Int = Runtime.getRuntime().availableProcessors(),
     private val dispatcher: CoroutineContext = Dispatchers.Default
 ) {
-
-     // Scan a directory for Kotlin files and process them sequentially.
+    /**
+     * Scan a directory for Kotlin files and process them sequentially.
+     */
     fun scanDirectory(sourceDir: File, excludePattern: String? = null, includePattern: String? = null) {
-        val ktFiles = fileSystem.findKotlinFiles(sourceDir, excludePattern, includePattern)
-        if (ktFiles.isEmpty()) {
-            writer.writeln("No Kotlin source files found in the directory")
-            return
-        }
-        if (verbose) {
-            writer.writeln("Found ${ktFiles.size} Kotlin files")
-        }
+        val ktFiles = findAndValidateKotlinFiles(sourceDir, excludePattern, includePattern) ?: return
+        
         val disposable: Disposable = Disposer.newDisposable()
         try {
             val factory = psiFactory ?: createPsiFactory(disposable)
@@ -48,19 +43,18 @@ class PublicDeclarationScanner(
         }
     }
 
-     // Scan a directory for Kotlin files and process them concurrently.     
+    /**
+     * Scan a directory for Kotlin files and process them concurrently.
+     */
     suspend fun scanDirectoryConcurrently(
         sourceDir: File,
         excludePattern: String? = null,
         includePattern: String? = null
     ) {
-        val ktFiles = fileSystem.findKotlinFiles(sourceDir, excludePattern, includePattern)
-        if (ktFiles.isEmpty()) {
-            writer.writeln("No Kotlin source files found in the directory")
-            return
-        }
+        val ktFiles = findAndValidateKotlinFiles(sourceDir, excludePattern, includePattern) ?: return
+        
         if (verbose) {
-            writer.writeln("Found ${ktFiles.size} Kotlin files to process concurrently with $maxConcurrency threads")
+            writer.writeln("Processing with $maxConcurrency threads")
         }
 
         val disposable: Disposable = Disposer.newDisposable()
@@ -78,6 +72,22 @@ class PublicDeclarationScanner(
         } finally {
             Disposer.dispose(disposable)
         }
+    }
+
+    private fun findAndValidateKotlinFiles(
+        sourceDir: File,
+        excludePattern: String? = null,
+        includePattern: String? = null
+    ): List<File>? {
+        val ktFiles = fileSystem.findKotlinFiles(sourceDir, excludePattern, includePattern)
+        if (ktFiles.isEmpty()) {
+            writer.writeln("No Kotlin source files found in the directory")
+            return null
+        }
+        if (verbose) {
+            writer.writeln("Found ${ktFiles.size} Kotlin files")
+        }
+        return ktFiles
     }
 
     private fun processFile(file: File, psiFactory: KtPsiFactory) {
